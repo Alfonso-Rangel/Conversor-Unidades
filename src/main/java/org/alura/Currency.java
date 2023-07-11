@@ -1,24 +1,24 @@
 package org.alura;
 
-public enum Currency {
-    MXN("Mexican Peso", "$"),
-    USD("United States Dollar", "$"),
-    EUR("Euro", "€"),
-    GBP("British Pound Sterling", "£"),
-    JPY("Japanese Yen", "¥"),
-    AUD("Australian Dollar", "$"),
-    CAD("Canadian Dollar", "$"),
-    CHF("Swiss Franc", "CHF"),
-    CNY("Chinese Yuan", "¥"),
-    SEK("Swedish Krona", "kr"),
-    NZD("New Zealand Dollar", "$");
+public enum Currency  implements Convertible<Currency> {
+    MXN("MXN","Mexican Peso", "$", 17),
+    USD("USD", "United States Dollar", "$", 1),
+    EUR("EUR", "Euro", "€", 0.9),
+    GBP("GBP", "British Pound Sterling", "£", 0.78),
+    JPY("JPY", "Japanese Yen", "¥", 140.75),
+    CAD("CAD", "Canadian Dollar", "$", 1.33),
+    CNY("CNY", "Chinese Yuan", "¥", 7.21);
 
     private final String name;
+    private final String fullname;
     private final String symbol;
+    private final double value;
 
-    Currency(String name, String symbol) {
+    Currency(String name, String fullname, String symbol, double value) {
         this.name = name;
+        this.fullname = fullname;
         this.symbol = symbol;
+        this.value = value;
     }
 
     public static String[] getNames() {
@@ -35,28 +35,17 @@ public enum Currency {
         return name;
     }
 
+    public String getFullname() {
+        return fullname;
+    }
+
     public String getSymbol() {
         return symbol;
     }
 
-    static Currency getValueOption(String option) {
-        return switch (option) {
-            case "Mexican Peso" -> Currency.MXN;
-            case "United States Dollar" -> Currency.USD;
-            case "Euro" -> Currency.EUR;
-            case "British Pound Sterling" -> Currency.GBP;
-            case "Japanese Yen" -> Currency.JPY;
-            case "Australian Dollar" -> Currency.AUD;
-            case "Canadian Dollar" -> Currency.CAD;
-            case "Swiss Franc" -> Currency.CHF;
-            case "Chinese Yuan" -> Currency.CNY;
-            case "Swedish Krona" -> Currency.SEK;
-            case "New Zealand Dollar" -> Currency.NZD;
-            default -> Currency.MXN;
-        };
+    public double convert(Currency unit2, double quantity) {
+        double valueInDollars = quantity / this.value;
+        return valueInDollars * unit2.value;
     }
 
-    public static double convert(Currency unit1, Currency unit2, double quantity) {
-        return 3.1416;
-    }
 }

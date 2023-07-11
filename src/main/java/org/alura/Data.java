@@ -1,6 +1,6 @@
 package org.alura;
 
-public enum Data {
+public enum Data implements Convertible<Data> {
     BIT("Bit", 1),
     BYTE("Byte", 8),
     KILOBYTE("Kilobyte", 8 * 1024),
@@ -33,19 +33,8 @@ public enum Data {
         return value;
     }
 
-    static Data getValueOption(String option) {
-        return switch (option) {
-            case "Bit" -> Data.BIT;
-            case "Byte" -> Data.BYTE;
-            case "Kilobyte" -> Data.KILOBYTE;
-            case "Megabyte" -> Data.MEGABYTE;
-            case "Gigabyte" -> Data.GIGABYTE;
-            default -> Data.BIT;
-        };
-    }
-
-    public static double convert(Data unit1, Data unit2, double quantity) {
-        double valueInBits = quantity * unit1.getValue();
+    public double convert(Data unit2, double quantity) {
+        double valueInBits = quantity * this.value;
         return valueInBits / unit2.getValue();
     }
 }

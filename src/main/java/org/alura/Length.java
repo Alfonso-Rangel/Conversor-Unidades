@@ -1,6 +1,6 @@
 package org.alura;
 
-public enum Length {
+public enum Length implements Convertible<Length> {
     MILLIMETERS("Millimeters", 0.001),
     CENTIMETERS("Centimeters", 0.01),
     METERS("Meters", 1.0),
@@ -36,22 +36,8 @@ public enum Length {
         return value;
     }
 
-    static Length getValueOption(String option) {
-        return switch (option) {
-            case "Millimeters" -> Length.MILLIMETERS;
-            case "Centimeters" -> Length.CENTIMETERS;
-            case "Meters" -> Length.METERS;
-            case "Kilometers" -> Length.KILOMETERS;
-            case "Inches" -> Length.INCHES;
-            case "Feet" -> Length.FEET;
-            case "Yards" -> Length.YARDS;
-            case "Miles" -> Length.MILES;
-            default -> Length.MILLIMETERS;
-        };
-    }
-
-    static double convert(Length unit1, Length unit2, double quantity) {
-        double valueInMeters = quantity * unit1.getValue();
+    public double convert(Length unit2, double quantity) {
+        double valueInMeters = quantity * this.value;
         return valueInMeters / unit2.getValue();
     }
 }

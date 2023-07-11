@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class MainFrame extends JFrame {
     private JPanel mainPanel;
@@ -12,10 +13,10 @@ public class MainFrame extends JFrame {
     private String mode = "Currency";
     private String unitSource = "";
     private String unitDestiny = "";
-    private final Color resaltado = Color.decode("#FF666F");
-    private final Color resaltadoAcento = Color.decode("#333333");
-    private final Color defecto = Color.decode("#293840");
-    private final Color defectoAcento = Color.decode("#A4AABB");
+    private final Color highlightedColor = Color.decode("#FF666F");
+    private final Color highlightedAccentColor = Color.decode("#333333");
+    private final Color defaultColor = Color.decode("#293840");
+    private final Color defaultAccentColor = Color.decode("#A4AABB");
     private final String[] currency = Currency.getNames();
     private final String[] lengthUnit = Length.getNames();
     private final String[] time = Time.getNames();
@@ -23,16 +24,17 @@ public class MainFrame extends JFrame {
     private final String[] data = Data.getNames();
 
     public MainFrame() {
-        setTitle("Conversor de Unidades");
+        setTitle("Unit Converter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(800, 600));
 
         createSelectorMenu();
         selectDefaultButton();
-        createConversorPanel(currency);
+        createConverterPanel(currency);
 
         pack();
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
     }
 
@@ -42,6 +44,8 @@ public class MainFrame extends JFrame {
 
         JLabel logoLabel = new JLabel();
         logoLabel.setPreferredSize(new Dimension(180, 100));
+        logoLabel.setIcon(new ImageIcon("multimedia/aluraoracle.png"));
+        logoLabel.setBorder(BorderFactory.createEmptyBorder(0, 75, 0, 0));
         menuPanel.add(logoLabel);
 
         JButton button1 = createButtonMenu("Currency", "multimedia/monedas.png", currency);
@@ -74,15 +78,15 @@ public class MainFrame extends JFrame {
 
         button.addActionListener(e -> {
             if (selectedButton != null) {
-                selectedButton.setBackground(defecto);
-                selectedButton.setForeground(defectoAcento);
+                selectedButton.setBackground(defaultColor);
+                selectedButton.setForeground(defaultAccentColor);
             }
-            button.setBackground(resaltado);
-            button.setForeground(resaltadoAcento);
+            button.setBackground(highlightedColor);
+            button.setForeground(highlightedAccentColor);
             selectedButton = button;
 
             mainPanel.removeAll();
-            createConversorPanel(unit);
+            createConverterPanel(unit);
             mainPanel.revalidate();
             mainPanel.repaint();
             mode = button.getText();
@@ -95,70 +99,73 @@ public class MainFrame extends JFrame {
         Component[] components = menuPanel.getComponents();
 
         if (components.length > 1 && components[1] instanceof JButton firstButton) {
-            firstButton.setBackground(resaltado);
-            firstButton.setForeground(resaltadoAcento);
+            firstButton.setBackground(highlightedColor);
+            firstButton.setForeground(highlightedAccentColor);
             selectedButton = firstButton;
         }
     }
 
-    private void createConversorPanel(String[] options) {
+    private void createConverterPanel(String[] options) {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(3, 2, 10, 40));
 
-        JTextField origenTextField = new JTextField();
-        JComboBox<String> origenComboBox = new JComboBox<>(options);
-        JPanel origenPanel = designConversorPanel("Valor de origen: ", origenTextField, origenComboBox);
+        JTextField sourceTextField = new JTextField();
+        JComboBox<String> sourceComboBox = new JComboBox<>(options);
+        JPanel sourcePanel = designConverterPanel("Source Value: ", sourceTextField, sourceComboBox);
 
-        JTextField destinoTextField = new JTextField();
-        destinoTextField.setEditable(false);
-        JComboBox<String> destinoComboBox = new JComboBox<>(options);
-        JPanel destinoPanel = designConversorPanel("Valor destino: ", destinoTextField, destinoComboBox);
+        JTextField destinationTextField = new JTextField();
+        destinationTextField.setEditable(false);
+        JComboBox<String> destinationComboBox = new JComboBox<>(options);
+        JPanel destinationPanel = designConverterPanel("Destination Value: ", destinationTextField, destinationComboBox);
 
-        origenComboBox.addActionListener(e -> {
-            unitSource = (String) origenComboBox.getSelectedItem();
-            updateDestinoTextField(origenTextField, destinoTextField);
+        unitSource = (String) sourceComboBox.getSelectedItem();
+        unitDestiny = (String) destinationComboBox.getSelectedItem();
+
+        sourceComboBox.addActionListener(e -> {
+            unitSource = (String) sourceComboBox.getSelectedItem();
+            updateDestinationTextField(sourceTextField, destinationTextField);
         });
 
-        destinoComboBox.addActionListener(e -> {
-            unitDestiny = (String) destinoComboBox.getSelectedItem();
-            updateDestinoTextField(origenTextField, destinoTextField);
+        destinationComboBox.addActionListener(e -> {
+            unitDestiny = (String) destinationComboBox.getSelectedItem();
+            updateDestinationTextField(sourceTextField, destinationTextField);
         });
 
-        origenTextField.getDocument().addDocumentListener(new DocumentListener() {
+        sourceTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updateDestinoTextField();
+                updateDestinationTextField();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updateDestinoTextField();
+                updateDestinationTextField();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                updateDestinoTextField();
+                updateDestinationTextField();
             }
 
-            private void updateDestinoTextField() {
+            private void updateDestinationTextField() {
                 SwingUtilities.invokeLater(() -> {
-                    destinoTextField.setText(convertUnits(origenTextField.getText()));
+                    try {
+                        destinationTextField.setText(convertUnits(sourceTextField.getText()));
+                    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
+                    }
                 });
             }
         });
 
-        mainPanel.add(origenPanel);
-        mainPanel.add(destinoPanel);
+        mainPanel.add(sourcePanel);
+        mainPanel.add(destinationPanel);
 
-        JLabel infoLabel = new JLabel("PLACEHOLDER");
-        mainPanel.add(infoLabel);
-
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(100, 100, 70, 100));
 
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    private JPanel designConversorPanel(String label, JTextField textField, JComboBox<String> comboBox) {
+    private JPanel designConverterPanel(String label, JTextField textField, JComboBox<String> comboBox) {
         JPanel panel = new JPanel(new BorderLayout());
         textField.setFont(new Font("Arial", Font.PLAIN, 20));
         comboBox.setPreferredSize(new Dimension(100, 35));
@@ -169,47 +176,51 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-    private void updateDestinoTextField(JTextField origenTextField, JTextField destinoTextField) {
+    private void updateDestinationTextField(JTextField sourceTextField, JTextField destinationTextField) {
         SwingUtilities.invokeLater(() -> {
-            destinoTextField.setText(convertUnits(origenTextField.getText()));
+            try {
+                destinationTextField.setText(convertUnits(sourceTextField.getText()));
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
+            }
         });
     }
 
-    private String convertUnits(String input) {
+    private String convertUnits(String input) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        switch (mode) {
+            case "Currency" -> {
+                return convertUnits(input, Currency.class);
+            }
+            case "Length" -> {
+                return convertUnits(input, Length.class);
+            }
+            case "Temperature" -> {
+                return convertUnits(input, Temperature.class);
+            }
+            case "Time" -> {
+                return convertUnits(input, Time.class);
+            }
+            case "Data" -> {
+                return convertUnits(input, Data.class);
+            }
+            default -> {
+                return input;
+            }
+        }
+    }
+
+    private <T extends Enum<T> & Convertible<T>> String convertUnits(String input, Class<T> enumClass) {
         double value;
         try {
             value = Double.parseDouble(input);
         } catch (NumberFormatException e) {
             return input;
         }
-        switch (mode) {
-            case "Currency" -> {
-                Currency unit1 = Currency.getValueOption(unitSource);
-                Currency unit2 = Currency.getValueOption(unitDestiny);
-                value = (Currency.convert(unit1, unit2, value));
-            }
-            case "Length" -> {
-                Length unit1 = Length.getValueOption(unitSource);
-                Length unit2 = Length.getValueOption(unitDestiny);
-                value = (Length.convert(unit1, unit2, value));
-            }
-            case "Temperature" -> {
-                Temperature unit1 = Temperature.getValueOption(unitSource);
-                Temperature unit2 = Temperature.getValueOption(unitDestiny);
-                value = (Temperature.convert(unit1, unit2, value));
-            }
-            case "Time" -> {
-                Time unit1 = Time.getValueOption(unitSource);
-                Time unit2 = Time.getValueOption(unitDestiny);
-                value = (Time.convert(unit1, unit2, value));
-            }
-            case "Data" -> {
-                Data unit1 = Data.getValueOption(unitSource);
-                Data unit2 = Data.getValueOption(unitDestiny);
-                value = (Data.convert(unit1, unit2, value));
-            }
-            default -> { return input; }
-        }
+
+        T unit1 = Enum.valueOf(enumClass, unitSource.toUpperCase());
+        T unit2 = Enum.valueOf(enumClass, unitDestiny.toUpperCase());
+
+        value = unit1.convert(unit2, value);
+
         return String.valueOf(value);
     }
 }

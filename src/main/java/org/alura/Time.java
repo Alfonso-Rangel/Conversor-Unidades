@@ -1,6 +1,6 @@
 package org.alura;
 
-public enum Time {
+public enum Time implements Convertible<Time> {
     SECONDS("Seconds", 1),
     MINUTES("Minutes", 60),
     HOURS("Hours", 3600),
@@ -35,21 +35,9 @@ public enum Time {
         return value;
     }
 
-    static Time getValueOption(String option) {
-        return switch (option) {
-            case "Seconds" -> Time.SECONDS;
-            case "Minutes" -> Time.MINUTES;
-            case "Hours" -> Time.HOURS;
-            case "Days" -> Time.DAYS;
-            case "Weeks" -> Time.WEEKS;
-            case "Months" -> Time.MONTHS;
-            case "Years" -> Time.YEARS;
-            default -> Time.SECONDS;
-        };
-    }
 
-    static double convert(Time unit1, Time unit2, double quantity) {
-        double valueInSeconds = quantity * unit1.getValue();
+    public double convert(Time unit2, double quantity) {
+        double valueInSeconds = quantity * this.value;
         return valueInSeconds / unit2.getValue();
     }
 }

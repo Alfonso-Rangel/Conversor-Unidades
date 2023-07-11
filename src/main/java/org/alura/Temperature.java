@@ -1,6 +1,6 @@
 package org.alura;
 
-public enum Temperature {
+public enum Temperature implements Convertible<Temperature> {
     CELSIUS("Celsius"),
     FAHRENHEIT("Fahrenheit"),
     KELVIN("Kelvin");
@@ -25,32 +25,23 @@ public enum Temperature {
         return name;
     }
 
-    static Temperature getValueOption(String option) {
-        return switch (option) {
-            case "Celsius" -> Temperature.CELSIUS;
-            case "Fahrenheit" -> Temperature.FAHRENHEIT;
-            case "Kelvin" -> Temperature.KELVIN;
-            default -> Temperature.CELSIUS;
-        };
-    }
-
-    static double convert(Temperature unit1, Temperature unit2, double quantity) {
-        if (unit1 == Temperature.CELSIUS && unit2 == Temperature.FAHRENHEIT) {
+    public double convert(Temperature unit2, double quantity) {
+        if (this == Temperature.CELSIUS && unit2 == Temperature.FAHRENHEIT) {
             return (quantity * 9/5) + 32;
         }
-        else if (unit1 == Temperature.CELSIUS && unit2 == Temperature.KELVIN) {
+        else if (this == Temperature.CELSIUS && unit2 == Temperature.KELVIN) {
             return quantity + 273.15;
         }
-        else if (unit1 == Temperature.FAHRENHEIT && unit2 == Temperature.CELSIUS) {
+        else if (this == Temperature.FAHRENHEIT && unit2 == Temperature.CELSIUS) {
             return (quantity - 32) * 5/9;
         }
-        else if (unit1 == Temperature.FAHRENHEIT && unit2 == Temperature.KELVIN) {
+        else if (this == Temperature.FAHRENHEIT && unit2 == Temperature.KELVIN) {
             return (quantity + 459.67) * 5/9;
         }
-        else if (unit1 == Temperature.KELVIN && unit2 == Temperature.CELSIUS) {
+        else if (this == Temperature.KELVIN && unit2 == Temperature.CELSIUS) {
             return quantity - 273.15;
         }
-        else if (unit1 == Temperature.KELVIN && unit2 == Temperature.FAHRENHEIT) {
+        else if (this == Temperature.KELVIN && unit2 == Temperature.FAHRENHEIT) {
             return (quantity * 9/5) - 459.67;
         }
         else {
