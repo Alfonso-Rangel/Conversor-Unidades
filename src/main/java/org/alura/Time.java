@@ -17,6 +17,16 @@ public enum Time {
         this.value = value;
     }
 
+    public static String[] getNames() {
+        String[] names = new String[Time.values().length];
+        int i = 0;
+        for (Time unit : Time.values()) {
+            names[i] = unit.getName();
+            i++;
+        }
+        return names;
+    }
+
     public String getName() {
         return name;
     }
@@ -36,5 +46,10 @@ public enum Time {
             case "Years" -> Time.YEARS;
             default -> Time.SECONDS;
         };
+    }
+
+    static double convert(Time unit1, Time unit2, double quantity) {
+        double valueInSeconds = quantity * unit1.getValue();
+        return valueInSeconds / unit2.getValue();
     }
 }

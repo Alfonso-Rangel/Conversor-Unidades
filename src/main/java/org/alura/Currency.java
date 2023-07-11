@@ -21,6 +21,16 @@ public enum Currency {
         this.symbol = symbol;
     }
 
+    public static String[] getNames() {
+        String[] names = new String[Currency.values().length];
+        int i = 0;
+        for (Currency unit : Currency.values()) {
+            names[i] = unit.getName();
+            i++;
+        }
+        return names;
+    }
+
     public String getName() {
         return name;
     }
@@ -44,5 +54,9 @@ public enum Currency {
             case "New Zealand Dollar" -> Currency.NZD;
             default -> Currency.MXN;
         };
+    }
+
+    public static double convert(Currency unit1, Currency unit2, double quantity) {
+        return 3.1416;
     }
 }

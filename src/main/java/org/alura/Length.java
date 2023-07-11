@@ -18,6 +18,16 @@ public enum Length {
         this.value = value;
     }
 
+    public static String[] getNames() {
+        String[] names = new String[Length.values().length];
+        int i = 0;
+        for (Length unit : Length.values()) {
+            names[i] = unit.getName();
+            i++;
+        }
+        return names;
+    }
+
     public String getName() {
         return name;
     }
@@ -38,5 +48,10 @@ public enum Length {
             case "Miles" -> Length.MILES;
             default -> Length.MILLIMETERS;
         };
+    }
+
+    static double convert(Length unit1, Length unit2, double quantity) {
+        double valueInMeters = quantity * unit1.getValue();
+        return valueInMeters / unit2.getValue();
     }
 }

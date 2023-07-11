@@ -15,6 +15,16 @@ public enum Data {
         this.value = value;
     }
 
+    public static String[] getNames() {
+        String[] names = new String[Data.values().length];
+        int i = 0;
+        for (Data unit : Data.values()) {
+            names[i] = unit.getName();
+            i++;
+        }
+        return names;
+    }
+
     public String getName() {
         return name;
     }
@@ -32,5 +42,10 @@ public enum Data {
             case "Gigabyte" -> Data.GIGABYTE;
             default -> Data.BIT;
         };
+    }
+
+    public static double convert(Data unit1, Data unit2, double quantity) {
+        double valueInBits = quantity * unit1.getValue();
+        return valueInBits / unit2.getValue();
     }
 }
